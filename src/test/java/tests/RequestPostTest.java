@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 public class RequestPostTest extends TestBase { //TODO parameterize
     @Test
     public void requestPostTest() {
-        //Assemble
+        //Arrange
         UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
         String token = AuthenticationService.authenticate(userLoginDetails);
 
@@ -40,7 +40,7 @@ public class RequestPostTest extends TestBase { //TODO parameterize
 
     @Test
     public void requestPostsTest() {
-        // Assemble
+        //Arrange
         UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
         String token = AuthenticationService.authenticate(userLoginDetails);
 

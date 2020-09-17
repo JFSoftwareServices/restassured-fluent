@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 public class UpdatePostTest extends TestBase {
     @Test
     public void updatePostTest() {
-        //Assemble
+        //Arrange
         UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
         String token = AuthenticationService.authenticate(userLoginDetails);
         int postId = RandomIdGenerator.generate();

@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 public class UpdateProfileTest extends TestBase {
     @Test
     public void updateProfileTest() {
-        //Assemble
+        //Arrange
         UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
         String token = AuthenticationService.authenticate(userLoginDetails);
 

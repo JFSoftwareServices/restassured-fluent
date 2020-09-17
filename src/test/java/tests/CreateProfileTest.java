@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.is;
 public class CreateProfileTest extends TestBase { //TODO parameterize
     @Test
     public void createProfileTest() {
-        //Assemble
+        //Arrange
         UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
         String token = AuthenticationService.authenticate(userLoginDetails);
 
