@@ -1,14 +1,13 @@
 package tests;
 
 import com.google.gson.reflect.TypeToken;
+import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import model.Address;
 import model.Location;
-import model.UserLoginDetails;
 import org.junit.Test;
-import service.AuthenticationService;
-import service.RetrieveLocationService;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -21,21 +20,23 @@ import static org.hamcrest.Matchers.is;
 public class RequestLocationTest extends TestBase {
     @Test
     public void requestLocationTest() {
-        //Assemble
-        UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
-        String token = AuthenticationService.authenticate(userLoginDetails);
+        ValidatableResponse validatableResponse = RestAssured
+                .given()
+                .spec(requestSpecification)
+                .with()
+                .basePath("/location")
+                .and()
+                .queryParams(Map.of("id", 1))
+                .when()
+                .get()
+                .then()
+                .spec(responseSpecification)
+                .assertThat().statusCode(200);
 
-        //Act
-        Response response = RetrieveLocationService
-                .setPath("/location")
-                .setQueryParams(Map.of("id", 1))
-                .setToken(token)
-                .retrieveLocation();
-
-        //Assert
+        //assert
         Type type = new TypeToken<List<Location>>() {
         }.getType();
-        List<Location> locations = response.getBody().as(type, ObjectMapperType.GSON);
+        List<Location> locations = validatableResponse.extract().body().as(type, ObjectMapperType.GSON);
         assertThat(locations.get(0).getAddress().get(0), is(equalTo(Address.builder()
                 .street("1st street")
                 .flat_no("4A")

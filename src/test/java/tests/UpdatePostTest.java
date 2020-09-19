@@ -1,13 +1,9 @@
 package tests;
 
-import io.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.response.ValidatableResponse;
 import model.Post;
-import model.UserLoginDetails;
 import org.junit.Test;
-import service.AuthenticationService;
-import service.CreatePostService;
-import service.RetrievePostService;
-import service.UpdatePostService;
 import service.util.RandomIdGenerator;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -19,34 +15,50 @@ import static org.hamcrest.Matchers.is;
 public class UpdatePostTest extends TestBase {
     @Test
     public void updatePostTest() {
-        //Arrange
-        UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
-        String token = AuthenticationService.authenticate(userLoginDetails);
         int postId = RandomIdGenerator.generate();
+        //create post
         Post post = Post.builder().id(postId).title("Mr").author("Ade").build();
-        CreatePostService
-                .setPath("/posts")
-                .setToken(token)
-                .setPost(post)
-                .createPost();
+        RestAssured
+                .given()
+                .spec(requestSpecification)
+                .basePath("/posts")
+                .body(post)
+                .when()
+                .post()
+                .then()
+                .spec(responseSpecification)
+                .assertThat().statusCode(201);
 
-        //Act
+        //update post
         post = Post.builder().id(postId).title("Master").author("Ade").build();
-        UpdatePostService
-                .setPath("/posts/" + postId)
-                .setToken(token)
-                .setPost(post)
-                .updatePost();
-        Response response = RetrievePostService
-                .setPath("/posts/" + postId)
-                .setToken(token)
-                .retrievePost();
+        RestAssured
+                .given()
+                .spec(requestSpecification)
+                .basePath("/posts" + "/" + postId)
+                .body(post)
+                .when()
+                .put()
+                .then()
+                .spec(responseSpecification)
+                .assertThat().statusCode(200);
 
-        //Assert
-        post = response.getBody().as(Post.class);
-        assertThat(post.getId(), is(equalTo(postId)));
-        assertThat(post.getTitle(), is(equalTo("Master")));
-        assertThat(post.getAuthor(), is(equalTo("Ade")));
-        assertThat(response.getBody().asString(), matchesJsonSchemaInClasspath("schemas/post.json"));
+        //get post
+        ValidatableResponse validatableResponse = RestAssured
+                .given()
+                .spec(requestSpecification)
+                .basePath("/posts" + "/" + postId)
+                .body(post)
+                .when()
+                .get()
+                .then()
+                .spec(responseSpecification)
+                .assertThat().statusCode(200)
+                .and()
+                .assertThat().body(matchesJsonSchemaInClasspath("schemas/post.json").using(jsonSchemaFactory));
+
+        //assert
+        Post actualPost = validatableResponse.extract().body().as(Post.class);
+        Post expectedPost = Post.builder().id(postId).title("Master").author("Ade").build();
+        assertThat(actualPost, is(equalTo(expectedPost)));
     }
 }

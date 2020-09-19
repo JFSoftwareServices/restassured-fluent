@@ -1,37 +1,32 @@
 package tests;
 
-import io.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.response.ValidatableResponse;
 import model.Profile;
-import model.UserLoginDetails;
 import org.junit.Test;
-import service.AuthenticationService;
-import service.CreateProfileService;
 
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class CreateProfileTest extends TestBase { //TODO parameterize
     @Test
     public void createProfileTest() {
-        //Arrange
-        UserLoginDetails userLoginDetails = UserLoginDetails.DEFAULT_AUTHENTICATION_DATA;
-        String token = AuthenticationService.authenticate(userLoginDetails);
+        ValidatableResponse validatableResponse = RestAssured
+                .given()
+                .spec(requestSpecification)
+                .basePath("/posts/{postId}/profile")
+                .pathParams(Map.of("postId", 3))
+                .body(new Profile("Sams", 3))
+                .when()
+                .post()
+                .then()
+                .spec(responseSpecification)
+                .assertThat().statusCode(201);
 
-        //Act
-        Profile profile = new Profile("Sams", 3);
-        Map<String, Integer> pathParams = Map.of("postId", 3);
-        Response response = CreateProfileService
-                .setPath("/posts/{postId}/profile")
-                .setToken(token)
-                .setPathParams(pathParams)
-                .setProfile(profile)
-                .createProfile();
-
-        //Assert
-        profile = response.getBody().as(Profile.class);
-        assertThat(profile.getName(), is(equalTo("Sams")));
+        Profile actualProfile = validatableResponse.extract().response().getBody().as(Profile.class);
+        Profile expectedProfile = new Profile("Sams", 3);
+        assertThat(actualProfile, is(expectedProfile));
     }
 }
