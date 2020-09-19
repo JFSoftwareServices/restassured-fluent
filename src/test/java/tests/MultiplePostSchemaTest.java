@@ -7,9 +7,9 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.not;
@@ -34,8 +34,8 @@ public class MultiplePostSchemaTest {
     private static JsonSchemaFactory jsonSchemaFactory;
     private static ResponseDefinitionBuilder mockResponse = new ResponseDefinitionBuilder();
 
-    @BeforeClass
-    public static void setUp() {
+    @BeforeAll
+    static void setUp() {
         jsonSchemaFactory = JsonSchemaFactory.newBuilder()
                 .setValidationConfiguration(
                         ValidationConfiguration.newBuilder()
@@ -44,13 +44,13 @@ public class MultiplePostSchemaTest {
         server.start();
     }
 
-    @AfterClass
-    public static void teardown() {
+    @AfterAll
+    static void teardown() {
         server.stop();
     }
 
     @Test
-    public void testSchemaValidationHappyPath() {
+    void testSchemaValidationHappyPath() {
         mockResponse.withStatus(200).withBody(MULTIPLE_POSTS);
         setStub();
         RestAssured.given()
@@ -77,14 +77,14 @@ public class MultiplePostSchemaTest {
     }
 
     @Test
-    public void testSchemaValidationForIncorrectIdValue() {
+    void testSchemaValidationForIncorrectIdValue() {
         mockResponse.withStatus(200).withBody(MULTIPLE_POSTS.replace("\"TitleValue\"", "5"));
         setStub();
         arrangeActAssertNoMatch();
     }
 
     @Test
-    public void testSchemaValidationForIncorrectIdKey() {
+    void testSchemaValidationForIncorrectIdKey() {
         mockResponse.withStatus(200).withBody(MULTIPLE_POSTS.replace("id", "idX"));
         setStub();
         arrangeActAssertNoMatch();

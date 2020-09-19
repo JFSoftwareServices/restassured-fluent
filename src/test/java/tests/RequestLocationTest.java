@@ -3,11 +3,10 @@ package tests;
 import com.google.gson.reflect.TypeToken;
 import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import model.Address;
 import model.Location;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -17,9 +16,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class RequestLocationTest extends TestBase {
+class RequestLocationTest extends TestBase {
     @Test
-    public void requestLocationTest() {
+    void requestLocationTest() {
         ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)

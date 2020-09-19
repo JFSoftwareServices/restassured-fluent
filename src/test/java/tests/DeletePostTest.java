@@ -1,10 +1,9 @@
 package tests;
 
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import model.Post;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import service.util.RandomIdGenerator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,9 +11,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 //TODO parameterize
-public class DeletePostTest extends TestBase {
+class DeletePostTest extends TestBase {
     @Test
-    public void deletePostTest() {
+    void deletePostTest() {
         int postId = RandomIdGenerator.generate();
         //create post
         Post post = Post.builder().id(postId).title("Mr").author("Ade").build();

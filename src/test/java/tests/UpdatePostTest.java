@@ -3,7 +3,7 @@ package tests;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import model.Post;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import service.util.RandomIdGenerator;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -12,9 +12,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 //TODO parameterize
-public class UpdatePostTest extends TestBase {
+class UpdatePostTest extends TestBase {
     @Test
-    public void updatePostTest() {
+    void updatePostTest() {
         int postId = RandomIdGenerator.generate();
         //create post
         Post post = Post.builder().id(postId).title("Mr").author("Ade").build();

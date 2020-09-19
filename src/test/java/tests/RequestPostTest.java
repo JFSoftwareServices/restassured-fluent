@@ -3,10 +3,9 @@ package tests;
 import com.google.gson.reflect.TypeToken;
 import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import model.Post;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -16,9 +15,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class RequestPostTest extends TestBase { //TODO parameterize
+class RequestPostTest extends TestBase { //TODO parameterize
     @Test
-    public void requestPostTest() {
+    void requestPostTest() {
         ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)
@@ -37,7 +36,7 @@ public class RequestPostTest extends TestBase { //TODO parameterize
     }
 
     @Test
-    public void requestPostsTest() {
+    void requestPostsTest() {
         //get posts
         ValidatableResponse validatableResponse = RestAssured
                 .given()

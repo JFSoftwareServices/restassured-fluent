@@ -13,8 +13,8 @@ import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import model.UserLoginDetails;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class TestBase {
     ResponseSpecification responseSpecification;
     JsonSchemaFactory jsonSchemaFactory;
 
-    @Before
+    @BeforeEach
     public void initializationAndAuthenticate() {
         initialize();
         authenticate();
@@ -78,7 +78,7 @@ public class TestBase {
                 .freeze();
     }
 
-    @After
+    @AfterEach
     public void after() {
         JsonSchemaValidator.reset();
     }

@@ -7,14 +7,14 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.not;
 
-public class SinglePostSchemaTest {
+class SinglePostSchemaTest {
     private static final String SINGLE_POST = "{\n" +
             "\"id\": 1,\n" +
             "\"title\": \"TitleValue\",\n" +
@@ -24,8 +24,8 @@ public class SinglePostSchemaTest {
     private static JsonSchemaFactory jsonSchemaFactory;
     private static ResponseDefinitionBuilder mockResponse = new ResponseDefinitionBuilder();
 
-    @BeforeClass
-    public static void setUp() {
+    @BeforeAll
+    static void setUp() {
         jsonSchemaFactory = JsonSchemaFactory.newBuilder()
                 .setValidationConfiguration(
                         ValidationConfiguration.newBuilder()
@@ -35,19 +35,19 @@ public class SinglePostSchemaTest {
         server.start();
     }
 
-    @AfterClass
-    public static void teardown() {
+    @AfterAll
+    static void teardown() {
         server.stop();
     }
 
     @Test
-    public void testSchemaValidationForIncorrectIdValue() {
+    void testSchemaValidationForIncorrectIdValue() {
         mockResponse.withStatus(200).withBody(SINGLE_POST.replace("\"TitleValue\"", "5"));
         arrangeActAssert();
     }
 
     @Test
-    public void testSchemaValidationForIncorrectIdKey() {
+    void testSchemaValidationForIncorrectIdKey() {
         mockResponse.withStatus(200).withBody(SINGLE_POST.replace("id", "idX"));
         arrangeActAssert();
     }
