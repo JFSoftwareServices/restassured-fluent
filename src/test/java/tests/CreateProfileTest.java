@@ -18,7 +18,7 @@ class CreateProfileTest extends TestBase { //TODO parameterize
                 .spec(requestSpecification)
                 .basePath("/posts/{postId}/profile")
                 .pathParams(Map.of("postId", 3))
-                .body(new Profile("Sams", 3))
+                .body(Profile.builder().name("Sams").postId(3).build())
                 .when()
                 .post()
                 .then()
@@ -26,7 +26,7 @@ class CreateProfileTest extends TestBase { //TODO parameterize
                 .assertThat().statusCode(201);
 
         Profile actualProfile = validatableResponse.extract().response().getBody().as(Profile.class);
-        Profile expectedProfile = new Profile("Sams", 3);
+        Profile expectedProfile = Profile.builder().name("Sams").postId(3).build();
         assertThat(actualProfile, is(expectedProfile));
     }
 }

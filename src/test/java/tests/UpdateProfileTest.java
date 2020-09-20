@@ -17,7 +17,7 @@ class UpdateProfileTest extends TestBase {
                 .with()
                 .basePath("/posts/2/profile")
                 .and()
-                .body(new Profile("Tom", 2))
+                .body(Profile.builder().name("Tom").postId(2).build())
                 .when()
                 .post()
                 .then()
@@ -25,7 +25,7 @@ class UpdateProfileTest extends TestBase {
                 .assertThat().statusCode(201);
 
         Profile actualProfile = validatableResponse.extract().body().as(Profile.class);
-        Profile expectedProfile = new Profile("Tom", 2);
+        Profile expectedProfile = Profile.builder().name("Tom").postId(2).build();
         assertThat(actualProfile, is(expectedProfile));
     }
 }
