@@ -16,10 +16,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-class RequestLocationTest extends TestBase {
+final class RequestLocationTest extends TestBase {
     @Test
     void requestLocationTest() {
-        ValidatableResponse validatableResponse = RestAssured
+        final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)
                 .with()
@@ -32,10 +32,10 @@ class RequestLocationTest extends TestBase {
                 .spec(responseSpecification)
                 .assertThat().statusCode(200);
 
-        //assert
-        Type type = new TypeToken<List<Location>>() {
+        //assert post
+        final Type type = new TypeToken<List<Location>>() {
         }.getType();
-        List<Location> locations = validatableResponse.extract().body().as(type, ObjectMapperType.GSON);
+        final List<Location> locations = validatableResponse.extract().body().as(type, ObjectMapperType.GSON);
         assertThat(locations.get(0).getAddress().get(0), is(equalTo(Address.builder()
                 .street("1st street")
                 .flat_no("4A")

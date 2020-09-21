@@ -10,10 +10,10 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class CreateProfileTest extends TestBase { //TODO parameterize
+final class CreateProfileTest extends TestBase {
     @Test
     void createProfileTest() {
-        ValidatableResponse validatableResponse = RestAssured
+        final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts/{postId}/profile")
@@ -25,8 +25,9 @@ class CreateProfileTest extends TestBase { //TODO parameterize
                 .spec(responseSpecification)
                 .assertThat().statusCode(201);
 
-        Profile actualProfile = validatableResponse.extract().response().getBody().as(Profile.class);
-        Profile expectedProfile = Profile.builder().name("Sams").postId(3).build();
+        //assert post
+        final Profile actualProfile = validatableResponse.extract().response().getBody().as(Profile.class);
+        final Profile expectedProfile = Profile.builder().name("Sams").postId(3).build();
         assertThat(actualProfile, is(expectedProfile));
     }
 }

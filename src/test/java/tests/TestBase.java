@@ -34,7 +34,7 @@ public class TestBase {
     }
 
     private void authenticate() {
-        String token = RestAssured
+        final String token = RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/auth/login")
@@ -56,13 +56,13 @@ public class TestBase {
     }
 
     private void initializeResponseSpecification() {
-        ResponseSpecBuilder responseSpecBuilder = new ResponseSpecBuilder();
+        final ResponseSpecBuilder responseSpecBuilder = new ResponseSpecBuilder();
         responseSpecBuilder.expectContentType(ContentType.JSON);
         responseSpecification = responseSpecBuilder.build();
     }
 
     private void initializeRequestSpecification() {
-        RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
+        final RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
         requestSpecBuilder.setBaseUri(BASE_URI);
         requestSpecBuilder.setPort(PORT);
         requestSpecBuilder.addFilters(List.of(new RequestLoggingFilter(), new ResponseLoggingFilter()));

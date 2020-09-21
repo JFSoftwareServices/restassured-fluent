@@ -15,10 +15,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-class RequestPostTest extends TestBase { //TODO parameterize
+final class RequestPostTest extends TestBase {
     @Test
     void requestPostTest() {
-        ValidatableResponse validatableResponse = RestAssured
+        final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts/1")
@@ -30,15 +30,15 @@ class RequestPostTest extends TestBase { //TODO parameterize
                 .and()
                 .assertThat().body(matchesJsonSchemaInClasspath("schemas/post.json"));
 
-        Post actualPost = validatableResponse.extract().body().as(Post.class);
-        Post expectedPost = Post.builder().id(1).title("Selenium with C#").author("Karthik KK").build();
+        final Post actualPost = validatableResponse.extract().body().as(Post.class);
+        final Post expectedPost = Post.builder().id(1).title("Selenium with C#").author("Karthik KK").build();
         assertThat(actualPost, is(equalTo(expectedPost)));
     }
 
     @Test
     void requestPostsTest() {
-        //get posts
-        ValidatableResponse validatableResponse = RestAssured
+        //retrieve posts
+        final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts")
@@ -50,10 +50,10 @@ class RequestPostTest extends TestBase { //TODO parameterize
                 .and()
                 .assertThat().body(matchesJsonSchemaInClasspath("schemas/posts.json").using(jsonSchemaFactory));
 
-        //assert
-        Type type = new TypeToken<List<Post>>() {
+        //assert post
+        final Type type = new TypeToken<List<Post>>() {
         }.getType();
-        List<Post> posts = validatableResponse.extract().body().as(type, ObjectMapperType.GSON);
+        final List<Post> posts = validatableResponse.extract().body().as(type, ObjectMapperType.GSON);
         assertThat(posts.get(0).getAuthor(), equalTo("Karthik KK"));
         assertThat(posts.get(1).getAuthor(), equalTo("Karthik KK"));
         assertThat(posts.get(0).getTitle(), equalTo("Selenium with C#"));

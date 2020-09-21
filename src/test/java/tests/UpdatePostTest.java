@@ -11,18 +11,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-//TODO parameterize
-class UpdatePostTest extends TestBase {
+final class UpdatePostTest extends TestBase {
     @Test
     void updatePostTest() {
-        int postId = RandomIdGenerator.generate();
+        final int postId = RandomIdGenerator.generate();
         //create post
-        Post post = Post.builder().id(postId).title("Mr").author("Ade").build();
+        final Post createPostRequestBody = Post.builder().id(postId).title("Mr").author("Ade").build();
         RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts")
-                .body(post)
+                .body(createPostRequestBody)
                 .when()
                 .post()
                 .then()
@@ -30,24 +29,23 @@ class UpdatePostTest extends TestBase {
                 .assertThat().statusCode(201);
 
         //update post
-        post = Post.builder().id(postId).title("Master").author("Ade").build();
+        final Post uddatePostRequestBody = Post.builder().id(postId).title("Master").author("Ade").build();
         RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts" + "/" + postId)
-                .body(post)
+                .body(uddatePostRequestBody)
                 .when()
                 .put()
                 .then()
                 .spec(responseSpecification)
                 .assertThat().statusCode(200);
 
-        //get post
-        ValidatableResponse validatableResponse = RestAssured
+        //retrieve post
+        final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts" + "/" + postId)
-                .body(post)
                 .when()
                 .get()
                 .then()
@@ -56,9 +54,9 @@ class UpdatePostTest extends TestBase {
                 .and()
                 .assertThat().body(matchesJsonSchemaInClasspath("schemas/post.json").using(jsonSchemaFactory));
 
-        //assert
-        Post actualPost = validatableResponse.extract().body().as(Post.class);
-        Post expectedPost = Post.builder().id(postId).title("Master").author("Ade").build();
+        //assert post
+        final Post actualPost = validatableResponse.extract().body().as(Post.class);
+        final Post expectedPost = Post.builder().id(postId).title("Master").author("Ade").build();
         assertThat(actualPost, is(equalTo(expectedPost)));
     }
 }

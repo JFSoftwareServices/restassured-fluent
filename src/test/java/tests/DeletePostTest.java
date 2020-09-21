@@ -10,33 +10,36 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-//TODO parameterize
-class DeletePostTest extends TestBase {
+final class DeletePostTest extends TestBase {
     @Test
-    void deletePostTest() {
-        int postId = RandomIdGenerator.generate();
+    final void deletePostTest() {
+        final int postId = RandomIdGenerator.generate();
         //create post
-        Post post = Post.builder().id(postId).title("Mr").author("Ade").build();
+        final Post postRequestBody = Post.builder().id(postId).title("Mr").author("Ade").build();
         RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts")
-                .body(post)
+                .body(postRequestBody)
                 .when()
-                .post();
+                .post()
+                .then()
+                .spec(responseSpecification)
+                .assertThat().statusCode(201);
 
         //delete post
-        post = Post.builder().id(postId).title("Master").author("Ade").build();
         RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts" + "/" + postId)
-                .body(post)
                 .when()
-                .delete();
+                .delete()
+                .then()
+                .spec(responseSpecification)
+                .assertThat().statusCode(200);
 
-        //get post
-        ValidatableResponse validatableResponse = RestAssured
+        //retrieve post
+        final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpecification)
                 .basePath("/posts" + "/" + postId)
@@ -46,8 +49,8 @@ class DeletePostTest extends TestBase {
                 .spec(responseSpecification)
                 .assertThat().statusCode(404);
 
-        //assert
-        post = validatableResponse.extract().response().getBody().as(Post.class);
+        //assert post
+        final Post post = validatableResponse.extract().response().getBody().as(Post.class);
         assertThat(post.getId(), is(equalTo(0)));
         assertThat(post.getTitle(), is(equalTo(null)));
         assertThat(post.getAuthor(), is(equalTo(null)));
