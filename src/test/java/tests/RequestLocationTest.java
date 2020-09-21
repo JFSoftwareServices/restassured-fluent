@@ -6,6 +6,7 @@ import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ValidatableResponse;
 import model.Address;
 import model.Location;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
@@ -19,9 +20,11 @@ import static org.hamcrest.Matchers.is;
 final class RequestLocationTest extends TestBase {
     @Test
     void requestLocationTest() {
+        authenticate();
+
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
-                .spec(requestSpecification)
+                .spec(requestSpec)
                 .with()
                 .basePath("/location")
                 .and()
@@ -29,8 +32,9 @@ final class RequestLocationTest extends TestBase {
                 .when()
                 .get()
                 .then()
-                .spec(responseSpecification)
-                .assertThat().statusCode(200);
+                .spec(responseSpec)
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
 
         //assert post
         final Type type = new TypeToken<List<Location>>() {

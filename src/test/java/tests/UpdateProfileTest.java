@@ -3,6 +3,7 @@ package tests;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import model.Profile;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,10 +12,12 @@ import static org.hamcrest.Matchers.is;
 final class UpdateProfileTest extends TestBase {
     @Test
     void updateProfileTest() {
+        authenticate();
+
         //update post
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
-                .spec(requestSpecification)
+                .spec(requestSpec)
                 .with()
                 .basePath("/posts/2/profile")
                 .and()
@@ -22,8 +25,9 @@ final class UpdateProfileTest extends TestBase {
                 .when()
                 .post()
                 .then()
-                .spec(responseSpecification)
-                .assertThat().statusCode(201);
+                .spec(responseSpec)
+                .assertThat()
+                .statusCode(HttpStatus.SC_CREATED);
 
         //assert post
         final Profile actualProfile = validatableResponse.extract().body().as(Profile.class);

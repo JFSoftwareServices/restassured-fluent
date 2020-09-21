@@ -5,6 +5,7 @@ import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ValidatableResponse;
 import model.Post;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
@@ -18,17 +19,21 @@ import static org.hamcrest.Matchers.is;
 final class RequestPostTest extends TestBase {
     @Test
     void requestPostTest() {
+        authenticate();
+
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
-                .spec(requestSpecification)
+                .spec(requestSpec)
                 .basePath("/posts/1")
                 .when()
                 .get()
                 .then()
-                .spec(responseSpecification)
-                .assertThat().statusCode(200)
+                .spec(responseSpec)
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
                 .and()
-                .assertThat().body(matchesJsonSchemaInClasspath("schemas/post.json"));
+                .assertThat()
+                .body(matchesJsonSchemaInClasspath("schemas/post.json"));
 
         final Post actualPost = validatableResponse.extract().body().as(Post.class);
         final Post expectedPost = Post.builder().id(1).title("Selenium with C#").author("Karthik KK").build();
@@ -37,16 +42,19 @@ final class RequestPostTest extends TestBase {
 
     @Test
     void requestPostsTest() {
+        authenticate();
+
         //retrieve posts
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
-                .spec(requestSpecification)
+                .spec(requestSpec)
                 .basePath("/posts")
                 .when()
                 .get()
                 .then()
-                .spec(responseSpecification)
-                .assertThat().statusCode(200)
+                .spec(responseSpec)
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
                 .and()
                 .assertThat().body(matchesJsonSchemaInClasspath("schemas/posts.json").using(jsonSchemaFactory));
 

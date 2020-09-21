@@ -3,6 +3,7 @@ package tests;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import model.Post;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import service.util.RandomIdGenerator;
 
@@ -14,45 +15,52 @@ import static org.hamcrest.Matchers.is;
 final class UpdatePostTest extends TestBase {
     @Test
     void updatePostTest() {
+        authenticate();
+
         final int postId = RandomIdGenerator.generate();
         //create post
         final Post createPostRequestBody = Post.builder().id(postId).title("Mr").author("Ade").build();
         RestAssured
                 .given()
-                .spec(requestSpecification)
+                .spec(requestSpec)
                 .basePath("/posts")
                 .body(createPostRequestBody)
                 .when()
                 .post()
                 .then()
-                .spec(responseSpecification)
-                .assertThat().statusCode(201);
+                .spec(responseSpec)
+                .assertThat()
+                .statusCode(HttpStatus.SC_CREATED);
 
         //update post
-        final Post uddatePostRequestBody = Post.builder().id(postId).title("Master").author("Ade").build();
+        final Post updatePostRequestBody = Post.builder().id(postId).title("Master").author("Ade").build();
         RestAssured
                 .given()
-                .spec(requestSpecification)
+                .spec(requestSpec)
                 .basePath("/posts" + "/" + postId)
-                .body(uddatePostRequestBody)
+                .body(updatePostRequestBody)
                 .when()
                 .put()
                 .then()
-                .spec(responseSpecification)
-                .assertThat().statusCode(200);
+                .spec(responseSpec)
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
 
         //retrieve post
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
-                .spec(requestSpecification)
+                .spec(requestSpec)
                 .basePath("/posts" + "/" + postId)
                 .when()
                 .get()
                 .then()
-                .spec(responseSpecification)
-                .assertThat().statusCode(200)
+                .spec(responseSpec)
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
                 .and()
-                .assertThat().body(matchesJsonSchemaInClasspath("schemas/post.json").using(jsonSchemaFactory));
+                .assertThat()
+                .body(matchesJsonSchemaInClasspath("schemas/post.json")
+                        .using(jsonSchemaFactory));
 
         //assert post
         final Post actualPost = validatableResponse.extract().body().as(Post.class);
