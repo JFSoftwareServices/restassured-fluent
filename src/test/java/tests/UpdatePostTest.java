@@ -1,23 +1,47 @@
 package tests;
 
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import io.restassured.RestAssured;
+import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import model.Post;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import service.util.RandomIdGenerator;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static tests.Authentication.authenticate;
+import static tests.DefaultJsonSchemaFactory.buildDefaultJsonSchemaFactory;
+import static tests.DefaultRequestSpecification.buildDefaultRequestSpecification;
+import static tests.DefaultResponseSpecification.buildDefaultResponseSpecification;
 
-final class UpdatePostTest extends TestBase {
+@TestInstance(Lifecycle.PER_CLASS)
+class UpdatePostTest {
+    private RequestSpecification requestSpec;
+    private ResponseSpecification responseSpec;
+    private JsonSchemaFactory jsonSchemaFactory;
+
+    @BeforeAll
+    void setUp() {
+        requestSpec = buildDefaultRequestSpecification();
+        responseSpec = buildDefaultResponseSpecification();
+        authenticate(requestSpec, responseSpec);
+
+        jsonSchemaFactory = buildDefaultJsonSchemaFactory();
+    }
+
     @Test
     void updatePostTest() {
-        authenticate();
-
-        final int postId = RandomIdGenerator.generate();
+        final int postId = RandomUtils.nextInt();
         //create post
         final Post createPostRequestBody = Post.builder().id(postId).title("Mr").author("Ade").build();
         RestAssured
@@ -66,5 +90,10 @@ final class UpdatePostTest extends TestBase {
         final Post actualPost = validatableResponse.extract().body().as(Post.class);
         final Post expectedPost = Post.builder().id(postId).title("Master").author("Ade").build();
         assertThat(actualPost, is(equalTo(expectedPost)));
+    }
+
+    @AfterAll
+    void tearDown() {
+        JsonSchemaValidator.reset();
     }
 }

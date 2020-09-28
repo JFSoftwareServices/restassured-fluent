@@ -1,12 +1,20 @@
 package tests;
 
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.google.gson.reflect.TypeToken;
 import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
+import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import model.Post;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -15,12 +23,28 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static tests.Authentication.authenticate;
+import static tests.DefaultJsonSchemaFactory.buildDefaultJsonSchemaFactory;
+import static tests.DefaultRequestSpecification.buildDefaultRequestSpecification;
+import static tests.DefaultResponseSpecification.buildDefaultResponseSpecification;
 
-final class RequestPostTest extends TestBase {
+@TestInstance(Lifecycle.PER_CLASS)
+class RequestPostTest {
+    private RequestSpecification requestSpec;
+    private ResponseSpecification responseSpec;
+    private JsonSchemaFactory jsonSchemaFactory;
+
+    @BeforeAll
+    void setUp() {
+        requestSpec = buildDefaultRequestSpecification();
+        responseSpec = buildDefaultResponseSpecification();
+        authenticate(requestSpec, responseSpec);
+
+        jsonSchemaFactory = buildDefaultJsonSchemaFactory();
+    }
+
     @Test
     void requestPostTest() {
-        authenticate();
-
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpec)
@@ -42,8 +66,6 @@ final class RequestPostTest extends TestBase {
 
     @Test
     void requestPostsTest() {
-        authenticate();
-
         //retrieve posts
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
@@ -66,5 +88,10 @@ final class RequestPostTest extends TestBase {
         assertThat(posts.get(1).getAuthor(), equalTo("Karthik KK"));
         assertThat(posts.get(0).getTitle(), equalTo("Selenium with C#"));
         assertThat(posts.get(1).getTitle(), equalTo("Appium"));
+    }
+
+    @AfterAll
+    void tearDown() {
+        JsonSchemaValidator.reset();
     }
 }

@@ -4,10 +4,15 @@ import com.google.gson.reflect.TypeToken;
 import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import model.Address;
 import model.Location;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -16,12 +21,24 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static tests.Authentication.authenticate;
+import static tests.DefaultRequestSpecification.buildDefaultRequestSpecification;
+import static tests.DefaultResponseSpecification.buildDefaultResponseSpecification;
 
-final class RequestLocationTest extends TestBase {
+@TestInstance(Lifecycle.PER_CLASS)
+class RequestLocationTest {
+    private RequestSpecification requestSpec;
+    private ResponseSpecification responseSpec;
+
+    @BeforeAll
+    void setUp() {
+        requestSpec = buildDefaultRequestSpecification();
+        responseSpec = buildDefaultResponseSpecification();
+        authenticate(requestSpec, responseSpec);
+    }
+
     @Test
     void requestLocationTest() {
-        authenticate();
-
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
                 .spec(requestSpec)

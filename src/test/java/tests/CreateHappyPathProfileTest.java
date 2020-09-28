@@ -2,20 +2,37 @@ package tests;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import model.Profile;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static tests.Authentication.authenticate;
+import static tests.DefaultRequestSpecification.buildDefaultRequestSpecification;
+import static tests.DefaultResponseSpecification.buildDefaultResponseSpecification;
 
-final class CreateProfileTest extends TestBase {
+@TestInstance(Lifecycle.PER_CLASS)
+class CreateHappyPathProfileTest {
+    private RequestSpecification requestSpec;
+    private ResponseSpecification responseSpec;
+
+    @BeforeAll
+    void setUp() {
+        requestSpec = buildDefaultRequestSpecification();
+        responseSpec = buildDefaultResponseSpecification();
+        authenticate(requestSpec, responseSpec);
+    }
+
     @Test
     void createProfileWithAuthenticationTest() {
-        authenticate();
-
         //create profile
         final ValidatableResponse validatableResponse = RestAssured
                 .given()
@@ -34,22 +51,5 @@ final class CreateProfileTest extends TestBase {
         final Profile actualProfile = validatableResponse.extract().response().getBody().as(Profile.class);
         final Profile expectedProfile = Profile.builder().name("Sams").postId(3).build();
         assertThat(actualProfile, is(expectedProfile));
-    }
-
-    @Test
-    void createProfileWithNoAuthenticationTest() {
-        //create profile
-        RestAssured
-                .given()
-                .spec(requestSpec)
-                .basePath("/posts/{postId}/profile")
-                .pathParams(Map.of("postId", 3))
-                .body(Profile.builder().name("Sams").postId(3).build())
-                .when()
-                .post()
-                .then()
-                .spec(responseSpec)
-                .assertThat()
-                .statusCode(HttpStatus.SC_UNAUTHORIZED);
     }
 }

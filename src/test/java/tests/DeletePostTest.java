@@ -2,21 +2,39 @@ package tests;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import model.Post;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import service.util.RandomIdGenerator;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static tests.Authentication.authenticate;
+import static tests.DefaultRequestSpecification.buildDefaultRequestSpecification;
+import static tests.DefaultResponseSpecification.buildDefaultResponseSpecification;
 
-final class DeletePostTest extends TestBase {
+@TestInstance(Lifecycle.PER_CLASS)
+class DeletePostTest {
+    private RequestSpecification requestSpec;
+    private ResponseSpecification responseSpec;
+
+    @BeforeAll
+    void setUp() {
+        requestSpec = buildDefaultRequestSpecification();
+        responseSpec = buildDefaultResponseSpecification();
+        authenticate(requestSpec, responseSpec);
+    }
+
     @Test
     final void deletePostTest() {
-        authenticate();
 
-        final int postId = RandomIdGenerator.generate();
+        final int postId = RandomUtils.nextInt();
         //create post
         final Post postRequestBody = Post.builder().id(postId).title("Mr").author("Ade").build();
         RestAssured

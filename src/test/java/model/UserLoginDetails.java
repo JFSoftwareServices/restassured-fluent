@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserLoginDetails {
     public static final UserLoginDetails
-            DEFAULT_AUTHENTICATION_DATA = new UserLoginDetails("bruno@email.com", "bruno");
+            DEFAULT_USER_LOGIN_DETAILS = new UserLoginDetails("bruno@email.com", "bruno");
     private String email;
     private String password;
 }
